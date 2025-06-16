@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart'; // Importa tu servicio (ajusta el path según tu estructura)
 
 class LoginScreen extends StatelessWidget {
-  final _cedulaController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final Color yellowColor = Color(0xFFFFD100); // Amarillo bandera Ecuador
-    final Color blueColor = Color(0xFF003399); // Azul bandera Ecuador
-    final Color redColor = Color(0xFFCE1126); // Rojo bandera Ecuador
+    final Color yellowColor = Color(0xFFFFD100);
+    final Color blueColor = Color(0xFF003399);
+    final Color redColor = Color(0xFFCE1126);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -18,16 +19,12 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Ícono o imagen relacionada con animales (ejemplo: un dibujo simple)
-              // Icon(Icons.pets, size: 100, color: blueColor),
-              // SizedBox(height: 20),
               Image.asset(
                 'assets/images/logo.png',
                 width: 400,
                 height: 100,
                 fit: BoxFit.contain,
               ),
-              
 
               Text(
                 'Bienvenido',
@@ -49,13 +46,13 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 40),
 
               TextField(
-                controller: _cedulaController,
-                keyboardType: TextInputType.number,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 style: TextStyle(fontSize: 20, color: blueColor),
                 decoration: InputDecoration(
-                  labelText: 'Cédula',
+                  labelText: 'Correo Electrónico',
                   labelStyle: TextStyle(color: blueColor, fontSize: 18),
-                  prefixIcon: Icon(Icons.perm_identity, color: yellowColor),
+                  prefixIcon: Icon(Icons.email, color: yellowColor),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: blueColor, width: 2),
                     borderRadius: BorderRadius.circular(12),
@@ -117,9 +114,8 @@ class LoginScreen extends StatelessWidget {
                       color: blueColor,
                     ),
                   ),
-                  onPressed: () {
-                    // Lógica de autenticación
-                    Navigator.pushReplacementNamed(context, '/home');
+                  onPressed: () async {
+                    await _handleLogin(context);
                   },
                 ),
               ),
@@ -144,5 +140,46 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _handleLogin(BuildContext context) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor completa todos los campos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor ingresa un correo electrónico válido'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final result = await AuthService.login(email, password);
+
+    if (result['success']) {
+      // Aquí el token ya fue guardado por AuthService
+
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Error al iniciar sesión'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

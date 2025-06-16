@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _cedulaController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final Color yellowColor = Color(0xFFFFD100);
+  final Color blueColor = Color(0xFF003399);
+  final Color redColor = Color(0xFFCE1126);
+
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    final Color yellowColor = Color(0xFFFFD100); // Amarillo bandera Ecuador
-    final Color blueColor = Color(0xFF003399); // Azul bandera Ecuador
-    final Color redColor = Color(0xFFCE1126); // Rojo bandera Ecuador
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -48,11 +57,8 @@ class RegisterScreen extends StatelessWidget {
 
               _buildTextField(
                 controller: _nameController,
-                label: 'Nombres',
+                label: 'Nombres Completos',
                 icon: Icons.person,
-                blueColor: blueColor,
-                yellowColor: yellowColor,
-                redColor: redColor,
               ),
 
               SizedBox(height: 20),
@@ -62,21 +68,15 @@ class RegisterScreen extends StatelessWidget {
                 label: 'Cédula',
                 icon: Icons.perm_identity,
                 keyboardType: TextInputType.number,
-                blueColor: blueColor,
-                yellowColor: yellowColor,
-                redColor: redColor,
               ),
 
               SizedBox(height: 20),
 
               _buildTextField(
                 controller: _emailController,
-                label: 'Correo',
+                label: 'Correo Electrónico',
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
-                blueColor: blueColor,
-                yellowColor: yellowColor,
-                redColor: redColor,
               ),
 
               SizedBox(height: 20),
@@ -86,9 +86,6 @@ class RegisterScreen extends StatelessWidget {
                 label: 'Contraseña',
                 icon: Icons.lock,
                 obscureText: true,
-                blueColor: blueColor,
-                yellowColor: yellowColor,
-                redColor: redColor,
               ),
 
               SizedBox(height: 35),
@@ -104,18 +101,17 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     elevation: 4,
                   ),
-                  child: Text(
-                    'Registrar',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: blueColor,
-                    ),
-                  ),
-                  onPressed: () {
-                    // Lógica real de registro
-                    Navigator.pop(context);
-                  },
+                  child: _isLoading 
+                      ? CircularProgressIndicator(color: blueColor)
+                      : Text(
+                          'Registrar',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: blueColor,
+                          ),
+                        ),
+                  onPressed: _isLoading ? null : _handleRegister,
                 ),
               ),
             ],
@@ -131,9 +127,6 @@ class RegisterScreen extends StatelessWidget {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
-    required Color blueColor,
-    required Color yellowColor,
-    required Color redColor,
   }) {
     return TextField(
       controller: controller,
@@ -153,6 +146,81 @@ class RegisterScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      ),
+    );
+  }
+
+  Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
+    final cedula = _cedulaController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (name.isEmpty || cedula.isEmpty || email.isEmpty || password.isEmpty) {
+      _showError('Por favor completa todos los campos');
+      return;
+    }
+
+    // Validación de email
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(email)) {
+      _showError('Por favor ingresa un correo electrónico válido');
+      return;
+    }
+
+    // Validación de contraseña
+    if (password.length < 6) {
+      _showError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/api/auth/register'), // Reemplaza con tu URL
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'nombre': name,
+          'email': email,
+          'password': password,
+          'cedula': cedula,
+        }),
+      );
+
+      final responseData = jsonDecode(response.body);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 201) {
+        // Registro exitoso
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registro exitoso! Por favor inicia sesión'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context); // Regresar al login
+      } else {
+        _showError(responseData['message'] ?? 'Error en el registro');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showError('Error de conexión: ${e.toString()}');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
       ),
     );
   }
