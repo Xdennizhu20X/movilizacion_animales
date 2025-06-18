@@ -28,33 +28,102 @@ class RequestScreenController extends ChangeNotifier {
 
   // Animal methods
   void agregarAnimal() {
-    animales.add(AnimalModel());
-    notifyListeners();
+    try {
+      final nuevoAnimal = AnimalModel();
+      animales.add(nuevoAnimal);
+      print('Animal agregado. Total animales: ${animales.length}'); // Debug
+      notifyListeners();
+    } catch (e) {
+      print('Error al agregar animal: $e');
+    }
   }
 
   void eliminarAnimal(int index) {
-    if (animales.length > 1) {
+    if (animales.length > 1 && index >= 0 && index < animales.length) {
+      // Dispose de los controllers del animal que se va a eliminar
+      // final animalAEliminar = animales[index];
+      // animalAEliminar.dispose(); // Descomenta cuando tengas el método dispose en AnimalModel
+      
       animales.removeAt(index);
+      print('Animal eliminado. Total animales: ${animales.length}'); // Debug
       notifyListeners();
     }
   }
 
   // Ave methods
-  void agregarAve() {
-    aves.add(AveModel());
+void agregarAve() {
+  try {
+    final nuevaAve = AveModel();
+    aves.add(nuevaAve);
+    debugPrint('Ave agregada. Total aves: ${aves.length}');
+    
+    // Notifica dos veces para asegurar la actualización
+    notifyListeners();
+    Future.delayed(Duration.zero, () => notifyListeners());
+  } catch (e) {
+    debugPrint('Error al agregar ave: $e');
+  }
+}
+
+void eliminarAve(int index) {
+  if (aves.length > 1 && index >= 0 && index < aves.length) {
+    aves[index].dispose(); // Properly dispose the controllers
+    aves.removeAt(index);
+    debugPrint('Ave eliminada. Total aves: ${aves.length}');
     notifyListeners();
   }
+}
 
-  void eliminarAve(int index) {
-    if (aves.length > 1) {
-      aves.removeAt(index);
-      notifyListeners();
-    }
+
+
+  // Método para validar si hay al menos un animal
+  bool tieneAnimales() {
+    return animales.isNotEmpty;
+  }
+
+  // Método para limpiar todos los datos
+  void limpiarDatos() {
+    // Dispose de todos los controllers
+    // for (var animal in animales) {
+    //   animal.dispose(); // Descomenta cuando tengas el método dispose
+    // }
+    // for (var ave in aves) {
+    //   ave.dispose(); // Descomenta cuando tengas el método dispose
+    // }
+    
+    animales.clear();
+    aves.clear();
+    
+    // Reinicializar con un animal
+    agregarAnimal();
+    
+    // Limpiar otros modelos (si tienen TextEditingController, límpialos aquí)
+    // predioModel.limpiar(); // Comentado hasta que implementes el método
+    // transporteModel.limpiar(); // Comentado hasta que implementes el método
+    
+    notifyListeners();
   }
 
   // Form submission
   Future<void> enviarSolicitud(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor complete todos los campos requeridos'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Validar que hay al menos un animal o ave
+    if (animales.isEmpty && aves.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debe agregar al menos un animal o ave'),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
     }
 
@@ -71,52 +140,100 @@ class RequestScreenController extends ChangeNotifier {
         'transporte': transporteModel.toJson(),
         'datos_adicionales': {
           'observaciones_generales': predioModel.observacionesGenerales,
+          'total_animales': animales.length,
+          'total_aves': aves.length,
         },
       };
 
       // Imprimir en consola el JSON de datos que se enviará
-      print('Datos a enviar: ${datos}');
+      print('Datos a enviar: $datos');
 
       final response = await ApiService.enviarSolicitud(datos);
-      print('Respuesta backend: $response'); // <- Asegúrate de imprimir esto
+      print('Respuesta backend: $response');
 
-      // Mostrar mensaje JSON de éxito
-      final resultado = {
-        'status': 'success',
-        'message': 'Datos enviados exitosamente',
-      };
-      print('Respuesta: $resultado');
-
+      // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Solicitud enviada exitosamente'),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.green, // Cambiado a verde para éxito
         ),
       );
 
+      // Limpiar formulario después del éxito
+      limpiarDatos();
       formKey.currentState?.reset();
-      Navigator.pop(context);
+      await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Éxito'),
+        content: const Text('La solicitud se registró correctamente'),
+        actions: [
+          TextButton(
+            child: const Text('Ver solicitudes'),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/viewRequests',
+              (route) => false,
+            ),
+          ),
+          TextButton(
+            child: const Text('Nueva solicitud'),
+            onPressed: () {
+              limpiarDatos();
+              formKey.currentState?.reset();
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+      
     } catch (e) {
       String errorMessage = 'Error al enviar solicitud';
 
       if (e is ApiException) {
         errorMessage = e.message ?? errorMessage;
         if (e.statusCode == 400) {
-          errorMessage =
-              'Datos incompletos o incorrectos. Verifique toda la información.';
+          errorMessage = 'Datos incompletos o incorrectos. Verifique toda la información.';
+        } else if (e.statusCode == 500) {
+          errorMessage = 'Error del servidor. Intente nuevamente más tarde.';
+        } else if (e.statusCode == 401) {
+          errorMessage = 'No autorizado. Verifique sus credenciales.';
         }
+      } else {
+        errorMessage = 'Error de conexión. Verifique su internet.';
       }
+
+      print('Error al enviar solicitud: $e'); // Debug
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Reintentar',
+            textColor: Colors.white,
+            onPressed: () => enviarSolicitud(context),
+          ),
         ),
       );
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    // Dispose de todos los controllers antes de destruir el controller
+     for (var animal in animales) {
+     animal.dispose(); // Descomenta cuando tengas el método dispose
+     }
+     for (var ave in aves) {
+       ave.dispose(); // Descomenta cuando tengas el método dispose
+    }
+    scrollController.dispose();
+    super.dispose();
   }
 }

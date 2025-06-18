@@ -1,45 +1,50 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  final Color yellowColor = Color(0xFFFFD100);
-  final Color blueColor = Color(0xFF003399);
-  final Color redColor = Color(0xFFCE1126);
+  final Color primaryPurple = Color(0xFF6e328a);
+  final Color whiteColor = Colors.white;
+  final Color secondaryText = Color(0xFF4A4A4A); // Gris oscuro para textos suaves
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: Text('Menú Principal'),
-        backgroundColor: blueColor,
+        title: Text(
+          'Menú Principal',
+          style: TextStyle(color: whiteColor),
+        ),
+        centerTitle: true,
+        backgroundColor: primaryPurple,
+        elevation: 4,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Bienvenido',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: blueColor,
+                color: primaryPurple,
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 10),
             Text(
               '¿Qué deseas hacer hoy?',
               style: TextStyle(
                 fontSize: 18,
-                color: blueColor.withOpacity(0.7),
+                color: secondaryText,
               ),
             ),
             SizedBox(height: 30),
 
             _buildMenuCard(
               context,
-              icon: Icons.assignment,
+              icon: Icons.assignment_outlined,
               title: 'Solicitar Movilización',
-              color: yellowColor,
               onTap: () => Navigator.pushNamed(context, '/request'),
             ),
 
@@ -49,7 +54,6 @@ class HomeScreen extends StatelessWidget {
               context,
               icon: Icons.history,
               title: 'Ver Solicitudes',
-              color: redColor,
               onTap: () => Navigator.pushNamed(context, '/viewRequests'),
             ),
 
@@ -59,7 +63,6 @@ class HomeScreen extends StatelessWidget {
               context,
               icon: Icons.settings,
               title: 'Ajustes de Cuenta',
-              color: blueColor,
               onTap: () {
                 // Navegar a ajustes
               },
@@ -70,43 +73,50 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuCard(BuildContext context,
-      {required IconData icon,
-      required String title,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    final Color primaryPurple = Color(0xFF6e328a);
+
     return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 4,
+      shadowColor: primaryPurple.withOpacity(0.2),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Container(
-          height: 110,
-          padding: EdgeInsets.symmetric(horizontal: 24),
+          height: 100,
+          padding: EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
-              colors: [color.withOpacity(0.7), color],
+              colors: [
+                primaryPurple.withOpacity(0.85),
+                primaryPurple,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 48, color: Colors.white),
-              SizedBox(width: 24),
+              Icon(icon, size: 40, color: Colors.white),
+              SizedBox(width: 20),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 20,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.white54),
+              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70),
             ],
           ),
         ),

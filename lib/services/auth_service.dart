@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String _baseUrl = 'http://localhost:3000/api/auth';
+  static const String _baseUrl = 'https://back-abg.onrender.com/api/auth';
 
   static Future<Map<String, dynamic>> login(String email, String password) async {
     try {
@@ -63,5 +63,21 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+
+  static Future<Map<String, dynamic>> sendResetEmail(String email) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+
+    final data = json.decode(response.body);
+    return data;
+  } catch (e) {
+    return {'success': false, 'message': 'Error de conexión'};
+  }
+}
   
 }
+

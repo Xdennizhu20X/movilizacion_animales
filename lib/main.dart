@@ -4,6 +4,7 @@ import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/request_screen/request_screen.dart';
 import 'screens/viewRequests_screen.dart';
+import 'screens/forgotPasswordScreen.dart';
 
 void main() {
   runApp(MovilizacionApp());
@@ -25,6 +26,7 @@ class MovilizacionApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/request': (context) => RequestScreen(), 
         '/viewRequests': (context) => ViewRequestsScreen(),
+        '/forgot-password': (context) => ForgotPasswordScreen(),
       },
     );
   }

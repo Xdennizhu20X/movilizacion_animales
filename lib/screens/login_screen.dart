@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart'; // Importa tu servicio (ajusta el path según tu estructura)
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
   final _emailController = TextEditingController();
@@ -7,137 +7,158 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color yellowColor = Color(0xFFFFD100);
-    final Color blueColor = Color(0xFF003399);
-    final Color redColor = Color(0xFFCE1126);
+    final Color primaryColor = Color(0xFF6E328A);
+    final Color whiteColor = Colors.white;
+    final Color borderColor = primaryColor.withOpacity(0.5);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: whiteColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 400,
-                height: 100,
-                fit: BoxFit.contain,
-              ),
-
-              Text(
-                'Bienvenido',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: blueColor,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 220,
+                  height: 100,
+                  fit: BoxFit.contain,
                 ),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Por favor inicia sesión para continuar',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: blueColor.withOpacity(0.7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 40),
 
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(fontSize: 20, color: blueColor),
-                decoration: InputDecoration(
-                  labelText: 'Correo Electrónico',
-                  labelStyle: TextStyle(color: blueColor, fontSize: 18),
-                  prefixIcon: Icon(Icons.email, color: yellowColor),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: blueColor, width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: redColor, width: 3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 20,
-                  ),
-                ),
-              ),
+                SizedBox(height: 24),
 
-              SizedBox(height: 20),
-
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                style: TextStyle(fontSize: 20, color: blueColor),
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  labelStyle: TextStyle(color: blueColor, fontSize: 18),
-                  prefixIcon: Icon(Icons.lock, color: yellowColor),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: blueColor, width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: redColor, width: 3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 20,
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 32),
-
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: yellowColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
-                  ),
-                  child: Text(
-                    'Iniciar Sesión',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: blueColor,
-                    ),
-                  ),
-                  onPressed: () async {
-                    await _handleLogin(context);
-                  },
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              TextButton(
-                child: Text(
-                  '¿No tienes cuenta? Regístrate',
+                Text(
+                  'Bienvenido',
                   style: TextStyle(
-                    fontSize: 18,
-                    color: redColor,
-                    decoration: TextDecoration.underline,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: primaryColor,
                   ),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-              ),
-            ],
+                SizedBox(height: 10),
+                Text(
+                  'Por favor inicia sesión para continuar',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: primaryColor.withOpacity(0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 36),
+
+                _buildTextField(
+                  controller: _emailController,
+                  label: 'Correo Electrónico',
+                  icon: Icons.email_outlined,
+                  primaryColor: primaryColor,
+                  borderColor: borderColor,
+                ),
+
+                SizedBox(height: 20),
+
+                _buildTextField(
+                  controller: _passwordController,
+                  label: 'Contraseña',
+                  icon: Icons.lock_outline,
+                  primaryColor: primaryColor,
+                  borderColor: borderColor,
+                  obscureText: true,
+                ),
+
+                SizedBox(height: 30),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: whiteColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      'Iniciar Sesión',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onPressed: () async {
+                      await _handleLogin(context);
+                    },
+                  ),
+                ),
+
+                SizedBox(height: 20),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: Text(
+                    '¿No tienes cuenta? Regístrate',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: primaryColor,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/forgot-password');
+                  },
+                  child: Text(
+                    '¿Olvidaste tu contraseña?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: primaryColor.withOpacity(0.8),
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required Color primaryColor,
+    required Color borderColor,
+    
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      style: TextStyle(fontSize: 18, color: primaryColor),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: primaryColor, fontSize: 16),
+        prefixIcon: Icon(icon, color: primaryColor),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
       ),
     );
   }
@@ -170,8 +191,6 @@ class LoginScreen extends StatelessWidget {
     final result = await AuthService.login(email, password);
 
     if (result['success']) {
-      // Aquí el token ya fue guardado por AuthService
-
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

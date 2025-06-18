@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String _baseUrl = 'http://localhost:3000/api'; // URL base de tu API
+  static const String _baseUrl = 'https://back-abg.onrender.com/api'; // URL base de tu API
   static const int _timeoutSeconds = 30; // Timeout para las solicitudes
 
   // Método privado para obtener headers con autenticación

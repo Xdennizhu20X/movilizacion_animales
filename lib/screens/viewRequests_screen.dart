@@ -8,9 +8,9 @@ class ViewRequestsScreen extends StatefulWidget {
 }
 
 class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
-  final Color yellowColor = Color(0xFFFFD100);
-  final Color blueColor = Color(0xFF003399);
-  final Color redColor = Color(0xFFCE1126);
+  static const Color primaryPurple = Color(0xFF6e328a);
+  static const Color whiteColor = Colors.white;
+  static const Color secondaryText = Color(0xFF4A4A4A);
   
   List<dynamic> movilizaciones = [];
   bool isLoading = true;
@@ -74,18 +74,31 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: Text('Mis Movilizaciones'),
-        backgroundColor: blueColor,
+        title: const Text(
+          'Mis Movilizaciones',
+          style: TextStyle(color: whiteColor),
+        ),
+        centerTitle: true,
+        backgroundColor: primaryPurple,
+        elevation: 4,
+        iconTheme: const IconThemeData(color: whiteColor),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : errorMessage.isNotEmpty
-                ? Center(child: Text(errorMessage))
+                ? Center(child: Text(
+                    errorMessage,
+                    style: TextStyle(color: secondaryText),
+                  ))
                 : movilizaciones.isEmpty
-                    ? Center(child: Text('No tienes movilizaciones registradas'))
+                    ? Center(child: Text(
+                        'No tienes movilizaciones registradas',
+                        style: TextStyle(color: secondaryText),
+                      ))
                     : RefreshIndicator(
                         onRefresh: _cargarMovilizaciones,
                         child: ListView.builder(
@@ -97,63 +110,74 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              margin: EdgeInsets.only(bottom: 16),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Solicitud del ${_formatDate(mov['fecha_solicitud'])}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: blueColor,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    if (mov['predio_origen'] != null)
+                              margin: const EdgeInsets.only(bottom: 16),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  // Navegar a pantalla de detalle
+                                  // Navigator.push(context, MaterialPageRoute(
+                                  //   builder: (context) => RequestDetailScreen(movilizacionId: mov['id']),
+                                  // ));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
                                       Text(
-                                        'Origen: ${mov['predio_origen']['nombre']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    if (mov['predio_destino'] != null)
-                                      Text(
-                                        'Destino: ${mov['predio_destino']['nombre']}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Chip(
-                                          label: Text(
-                                            mov['estado']?.toString().toUpperCase() ?? 'DESCONOCIDO',
-                                            style: TextStyle(color: Colors.white),
-                                          ),
-                                          backgroundColor:
-                                              _getStatusColor(mov['estado']?.toString() ?? ''),
+                                        'Solicitud del ${_formatDate(mov['fecha_solicitud'])}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: primaryPurple,
                                         ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            // Navegar a pantalla de detalle
-                                            // Navigator.push(context, MaterialPageRoute(
-                                            //   builder: (context) => RequestDetailScreen(movilizacionId: mov['id']),
-                                            // ));
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: yellowColor,
-                                          ),
-                                          child: Text(
-                                            'Ver Detalles',
-                                            style: TextStyle(color: Colors.black),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      if (mov['predio_origen'] != null)
+                                        Text(
+                                          'Origen: ${mov['predio_origen']['nombre']}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: secondaryText,
                                           ),
                                         ),
-                                      ],
-                                    )
-                                  ],
+                                      if (mov['predio_destino'] != null)
+                                        Text(
+                                          'Destino: ${mov['predio_destino']['nombre']}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: secondaryText,
+                                          ),
+                                        ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Chip(
+                                            label: Text(
+                                              mov['estado']?.toString().toUpperCase() ?? 'DESCONOCIDO',
+                                              style: const TextStyle(color: whiteColor),
+                                            ),
+                                            backgroundColor: _getStatusColor(mov['estado']?.toString() ?? ''),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              // Navegar a pantalla de detalle
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: primaryPurple.withOpacity(0.1),
+                                              foregroundColor: primaryPurple,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            ),
+                                            child: const Text('Ver Detalles'),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

@@ -7,78 +7,88 @@ class TransporteSection extends StatelessWidget {
 
   const TransporteSection({super.key, required this.controller});
 
+  static const Color mainColor = Color(0xFF6e328a);
+  static const Color secondaryText = Colors.black87;
+  static const double spacing = 14.0;
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: secondaryText, fontWeight: FontWeight.w500),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: mainColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: mainColor, width: 2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final transporte = controller.transporteModel;
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
-          value: controller.transporteModel.tipoVia,
-          decoration: const InputDecoration(
-            labelText: 'Tipo de Vía *',
-            border: OutlineInputBorder(),
-          ),
-          items: controller.transporteModel.tiposVia.map((tipo) {
-            return DropdownMenuItem(value: tipo, child: Text(tipo));
-          }).toList(),
+          value: transporte.tipoVia,
+          decoration: _inputDecoration('Tipo de Vía *'),
+          items: transporte.tiposVia.map(
+            (tipo) => DropdownMenuItem(value: tipo, child: Text(tipo)),
+          ).toList(),
           onChanged: (value) {
             if (value != null) {
-              controller.transporteModel.tipoVia = value;
+              transporte.tipoVia = value;
               controller.notifyListeners();
             }
           },
           validator: (value) => value == null ? 'Seleccione una opción' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         DropdownButtonFormField<String>(
-          value: controller.transporteModel.tipoTransporte,
-          decoration: const InputDecoration(
-            labelText: 'Tipo de Transporte *',
-            border: OutlineInputBorder(),
-          ),
-          items: controller.transporteModel.tiposTransporte.map((tipo) {
-            return DropdownMenuItem(value: tipo, child: Text(tipo));
-          }).toList(),
+          value: transporte.tipoTransporte,
+          decoration: _inputDecoration('Tipo de Transporte *'),
+          items: transporte.tiposTransporte.map(
+            (tipo) => DropdownMenuItem(value: tipo, child: Text(tipo)),
+          ).toList(),
           onChanged: (value) {
             if (value != null) {
-              controller.transporteModel.tipoTransporte = value;
+              transporte.tipoTransporte = value;
               controller.notifyListeners();
             }
           },
           validator: (value) => value == null ? 'Seleccione una opción' : null,
         ),
-        if (controller.transporteModel.tipoTransporte == 'Otro') ...[
-          const SizedBox(height: 12),
+        if (transporte.tipoTransporte == 'Otro') ...[
+          const SizedBox(height: spacing),
           TextFormField(
-            controller: controller.transporteModel.detalleOtro,
-            decoration: const InputDecoration(
-              labelText: 'Especifique el tipo de transporte *',
-              border: OutlineInputBorder(),
-            ),
+            controller: transporte.detalleOtro,
+            decoration: _inputDecoration('Especifique el tipo de transporte *'),
             validator: (value) {
-              if (controller.transporteModel.tipoTransporte == 'Otro' && 
-                  (value == null || value.isEmpty)) {
+              if (transporte.tipoTransporte == 'Otro' && (value == null || value.isEmpty)) {
                 return 'Este campo es requerido';
               }
               return null;
             },
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         TextFormField(
-          controller: controller.transporteModel.nombreTransportista,
-          decoration: const InputDecoration(
-            labelText: 'Nombre del Transportista *',
-            border: OutlineInputBorder(),
-          ),
+          controller: transporte.nombreTransportista,
+          decoration: _inputDecoration('Nombre del Transportista *'),
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         TextFormField(
-          controller: controller.transporteModel.cedulaTransportista,
-          decoration: const InputDecoration(
-            labelText: 'Cédula del Transportista *',
-            border: OutlineInputBorder(),
-          ),
+          controller: transporte.cedulaTransportista,
+          decoration: _inputDecoration('Cédula del Transportista *'),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validator: (value) {
@@ -91,22 +101,18 @@ class TransporteSection extends StatelessWidget {
             return null;
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         TextFormField(
-          controller: controller.transporteModel.placa,
-          decoration: const InputDecoration(
-            labelText: 'Placa del Vehículo *',
-            border: OutlineInputBorder(),
-          ),
+          controller: transporte.placa,
+          decoration: _inputDecoration('Placa del Vehículo *'),
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         TextFormField(
-          controller: controller.transporteModel.telefonoTransportista,
-          decoration: const InputDecoration(
-            labelText: 'Teléfono del Transportista *',
-            border: OutlineInputBorder(),
-          ),
+          controller: transporte.telefonoTransportista,
+          decoration: _inputDecoration('Teléfono del Transportista *'),
           keyboardType: TextInputType.phone,
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),

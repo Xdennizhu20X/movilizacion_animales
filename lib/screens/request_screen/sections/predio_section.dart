@@ -11,6 +11,33 @@ class PredioSection extends StatefulWidget {
 }
 
 class _PredioSectionState extends State<PredioSection> {
+  static const Color mainColor = Color(0xFF6e328a);
+  static const Color secondaryText = Colors.black87;
+  static const double spacing = 14.0;
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: secondaryText, fontWeight: FontWeight.w500),
+      border: OutlineInputBorder(
+        borderSide: const BorderSide(color: mainColor),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: mainColor, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: mainColor),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final predio = widget.controller.predioModel;
@@ -18,70 +45,44 @@ class _PredioSectionState extends State<PredioSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Predio de Origen
-        const Text(
-          'Predio de Origen',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
+        _sectionTitle('Predio de Origen'),
+        const SizedBox(height: 10),
+
         TextFormField(
           controller: predio.nombreController,
-          decoration: const InputDecoration(
-            labelText: 'Nombre del Predio *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Nombre del Predio *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: spacing),
+
         TextFormField(
           controller: predio.direccionController,
-          decoration: const InputDecoration(
-            labelText: 'Dirección *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Dirección *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: spacing),
+
         TextFormField(
           controller: predio.parroquiaController,
-          decoration: const InputDecoration(
-            labelText: 'Parroquia *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Parroquia *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         TextFormField(
           controller: predio.ubicacionController,
-          decoration: const InputDecoration(
-            labelText: 'Ubicación *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Ubicación *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
+
         DropdownButtonFormField<String>(
           key: ValueKey(predio.condicionTenencia),
           value: predio.condicionTenencia,
-          decoration: const InputDecoration(
-            labelText: 'Tipo de Propiedad *',
-            border: OutlineInputBorder(),
-          ),
-          items:
-              predio.condicionTenenciaOptions
-                  .map(
-                    (opcion) =>
-                        DropdownMenuItem(value: opcion, child: Text(opcion)),
-                  )
-                  .toList(),
+          decoration: _inputDecoration('Tipo de Propiedad *'),
+          items: predio.condicionTenenciaOptions.map(
+            (opcion) => DropdownMenuItem(value: opcion, child: Text(opcion)),
+          ).toList(),
           onChanged: (value) {
             if (value != null) {
               setState(() {
@@ -93,50 +94,31 @@ class _PredioSectionState extends State<PredioSection> {
           validator: (value) => value == null ? 'Seleccione una opción' : null,
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: spacing * 1.5),
 
-        // Destino
-        const Text(
-          'Destino',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
+        _sectionTitle('Destino'),
+        const SizedBox(height: 10),
 
         TextFormField(
           controller: predio.nombreDestinoController,
-          decoration: const InputDecoration(
-            labelText: 'Nombre del Predio Destino *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Nombre del Predio Destino *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
 
         TextFormField(
           controller: predio.parroquiaDestinoController,
-          decoration: const InputDecoration(
-            labelText: 'Parroquia Destino *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Parroquia Destino *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
 
         TextFormField(
           controller: predio.direccionDestinoController,
-          decoration: const InputDecoration(
-            labelText: 'Dirección Destino *',
-            border: OutlineInputBorder(),
-          ),
-          validator:
-              (value) =>
-                  value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+          decoration: _inputDecoration('Dirección Destino *'),
+          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
 
         CheckboxListTile(
           value: predio.esCentroFaenamiento,
@@ -150,17 +132,15 @@ class _PredioSectionState extends State<PredioSection> {
           },
           title: const Text('¿Es un Centro de Faenamiento?'),
           controlAffinity: ListTileControlAffinity.leading,
+          activeColor: mainColor,
+          contentPadding: EdgeInsets.zero,
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: spacing),
 
-        // Observaciones generales (opcional)
         TextFormField(
           controller: predio.observacionesGeneralesController,
-          decoration: const InputDecoration(
-            labelText: 'Observaciones Generales (opcional)',
-            border: OutlineInputBorder(),
-          ),
+          decoration: _inputDecoration('Observaciones Generales (opcional)'),
           maxLines: 3,
         ),
       ],
