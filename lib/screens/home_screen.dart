@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class HomeScreen extends StatelessWidget {
   final Color primaryPurple = Color(0xFF6e328a);
   final Color whiteColor = Colors.white;
-  final Color secondaryText = Color(0xFF4A4A4A); // Gris oscuro para textos suaves
+  final Color secondaryText = Color(0xFF4A4A4A);
+
+  HomeScreen({super.key}); // Gris oscuro para textos suaves
 
   @override
   Widget build(BuildContext context) {

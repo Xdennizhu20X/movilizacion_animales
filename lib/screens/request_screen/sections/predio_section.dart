@@ -56,13 +56,6 @@ class _PredioSectionState extends State<PredioSection> {
         const SizedBox(height: spacing),
 
         TextFormField(
-          controller: predio.direccionController,
-          decoration: _inputDecoration('Dirección *'),
-          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
-        ),
-        const SizedBox(height: spacing),
-
-        TextFormField(
           controller: predio.parroquiaController,
           decoration: _inputDecoration('Parroquia *'),
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
@@ -70,11 +63,32 @@ class _PredioSectionState extends State<PredioSection> {
         const SizedBox(height: spacing),
 
         TextFormField(
-          controller: predio.ubicacionController,
-          decoration: _inputDecoration('Ubicación *'),
-          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
-        ),
-        const SizedBox(height: spacing),
+ controller: predio.localidadController,
+ decoration: _inputDecoration('Localidad (sector) *'),
+ validator: (value) =>
+ value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+ ),
+ const SizedBox(height: spacing),
+
+        TextFormField(
+ controller: predio.sitioController,
+ decoration: _inputDecoration('Sitio *'),
+ validator: (value) =>
+ value?.isEmpty ?? true ? 'Este campo es requerido' : null,
+ ),
+ const SizedBox(height: spacing),
+
+        TextFormField(
+          controller: predio.kilometroController,
+          decoration: _inputDecoration('Kilómetro (máximo 50 km) *'),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+ if (value == null || value.isEmpty) return 'Este campo es requerido';
+ if (double.tryParse(value) == null || double.parse(value) > 50) return 'Debe ser un número menor o igual a 50';
+            return null;
+          },
+ ),
+ const SizedBox(height: spacing),
 
         DropdownButtonFormField<String>(
           key: ValueKey(predio.condicionTenencia),

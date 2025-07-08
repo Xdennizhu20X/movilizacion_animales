@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 
 class ViewRequestsScreen extends StatefulWidget {
+  const ViewRequestsScreen({super.key});
+
   @override
   _ViewRequestsScreenState createState() => _ViewRequestsScreenState();
 }

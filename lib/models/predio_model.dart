@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 class PredioModel {
   // Campos del Predio de Origen
   final TextEditingController nombreController = TextEditingController();
+  final TextEditingController localidadController = TextEditingController();
+  final TextEditingController sitioController = TextEditingController();
   final TextEditingController parroquiaController = TextEditingController();
-  final TextEditingController ubicacionController = TextEditingController();
-  final TextEditingController direccionController =
-      TextEditingController(); // si lo necesitas en origen también
 
   String condicionTenencia = 'Propio'; // Propio, Arrendado, Prestado
   final List<String> condicionTenenciaOptions = [
@@ -24,6 +23,7 @@ class PredioModel {
 
   // Para latitud y longitud puedes usar variables normales o TextEditingController si quieres entrada manual
   double? latitudDestino;
+  final TextEditingController kilometroController = TextEditingController();
   double? longitudDestino;
 
   bool esCentroFaenamiento = false;
@@ -41,9 +41,10 @@ class PredioModel {
    Map<String, dynamic> toJsonPredioOrigen() {
     return {
       'nombre': nombreController.text,
-      'ubicacion': ubicacionController.text,
+      'localidad': localidadController.text,
+      'sitio': sitioController.text,
       'parroquia': parroquiaController.text,
-      'direccion': direccionController.text,
+      'kilometro': double.tryParse(kilometroController.text) ?? 0.0,
       'es_centro_faenamiento': false, // o según tu lógica
       'latitud': null,
       'longitud': null,
@@ -75,9 +76,10 @@ class PredioModel {
 
   // Validaciones mejoradas para origen y destino
   bool isOrigenValid() {
+    final double? kilometro = double.tryParse(kilometroController.text);
     return nombreController.text.isNotEmpty &&
         parroquiaController.text.isNotEmpty &&
-        ubicacionController.text.isNotEmpty &&
+        localidadController.text.isNotEmpty &&
         condicionTenencia.isNotEmpty;
   }
 
@@ -94,8 +96,9 @@ class PredioModel {
   void dispose() {
     nombreController.dispose();
     parroquiaController.dispose();
-    ubicacionController.dispose();
-    direccionController.dispose();
+    localidadController.dispose();
+    sitioController.dispose();
+    kilometroController.dispose();
     nombreDestinoController.dispose();
     parroquiaDestinoController.dispose();
     direccionDestinoController.dispose();

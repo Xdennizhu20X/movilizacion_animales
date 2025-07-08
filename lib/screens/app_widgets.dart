@@ -117,8 +117,7 @@ class AppWidgets {
                         onPrimary: AppStyles.blanco,
                         surface: AppStyles.blanco,
                         onSurface: AppStyles.negro,
-                      ),
-                      dialogBackgroundColor: AppStyles.blanco,
+                      ), dialogTheme: DialogThemeData(backgroundColor: AppStyles.blanco),
                     ),
                     child: child!,
                   );

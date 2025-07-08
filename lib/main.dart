@@ -11,6 +11,8 @@ void main() {
 }
 
 class MovilizacionApp extends StatelessWidget {
+  const MovilizacionApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

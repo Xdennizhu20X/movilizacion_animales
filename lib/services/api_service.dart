@@ -51,7 +51,7 @@ class ApiService {
       return _handleResponse(response);
     } on http.ClientException catch (e) {
       throw ApiException(message: 'Error de conexión: ${e.message}');
-    } on TimeoutException catch (e) { // Now properly imported
+    } on TimeoutException { // Now properly imported
       throw ApiException(message: 'Tiempo de espera agotado');
     } catch (e) {
       throw ApiException(message: 'Error inesperado: $e');

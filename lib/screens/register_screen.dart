@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:async';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -185,6 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       elevation: 2,
                     ),
+                    onPressed: _isLoading ? null : _handleRegister,
                     child: _isLoading 
                         ? CircularProgressIndicator(color: whiteColor)
                         : Text(
@@ -194,7 +197,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                    onPressed: _isLoading ? null : _handleRegister,
                   ),
                 ),
                 SizedBox(height: 20),

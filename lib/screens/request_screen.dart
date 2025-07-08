@@ -4,6 +4,8 @@ import 'dart:convert';
 import '../services/api_service.dart';
 
 class RequestScreen extends StatefulWidget {
+  const RequestScreen({super.key});
+
   @override
   _RequestScreenState createState() => _RequestScreenState();
 }
@@ -31,8 +33,8 @@ class _RequestScreenState extends State<RequestScreen> {
   final _detalleOtroController = TextEditingController();
   
   // Listas para animales y aves
-  List<Map<String, dynamic>> _animales = [];
-  List<Map<String, dynamic>> _aves = [];
+  final List<Map<String, dynamic>> _animales = [];
+  final List<Map<String, dynamic>> _aves = [];
   
   // Variables de estado
   String _selectedTipoTransporte = 'Camión';
