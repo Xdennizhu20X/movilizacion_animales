@@ -21,21 +21,12 @@ class RequestScreenController extends ChangeNotifier {
 
   // Initialize with one animal and one ave
   RequestScreenController() {
-    agregarAnimal();
+    //agregarAnimal();
     //agregarAve();
   }
 
   // Animal methods
-  void agregarAnimal() {
-    try {
-      final nuevoAnimal = AnimalModel();
-      animales.add(nuevoAnimal);
-      print('Animal agregado. Total animales: ${animales.length}'); // Debug
-      notifyListeners();
-    } catch (e) {
-      print('Error al agregar animal: $e');
-    }
-  }
+
 
   void eliminarAnimal(int index) {
     if (animales.length > 1 && index >= 0 && index < animales.length) {
@@ -48,6 +39,23 @@ class RequestScreenController extends ChangeNotifier {
       notifyListeners();
     }
   }
+  
+void agregarAnimal(AnimalModel nuevoAnimal) {
+  animales.add(nuevoAnimal);
+  notifyListeners();
+}
+
+void actualizarAnimal(int index, AnimalModel updatedAnimal) {
+  if (index >= 0 && index < animales.length) {
+    // Dispose del animal antiguo
+    animales[index].dispose();
+    
+    // Asignar el nuevo animal
+    animales[index] = updatedAnimal;
+    notifyListeners();
+  }
+}
+  
 
   // Ave methods
 void agregarAve() {
@@ -61,6 +69,14 @@ void agregarAve() {
     Future.delayed(Duration.zero, () => notifyListeners());
   } catch (e) {
     debugPrint('Error al agregar ave: $e');
+  }
+}
+
+void actualizarAve(int index, AveModel updatedAve) {
+  if (index >= 0 && index < aves.length) {
+    aves[index].dispose();
+    aves[index] = updatedAve;
+    notifyListeners();
   }
 }
 
@@ -94,7 +110,7 @@ void eliminarAve(int index) {
     aves.clear();
     
     // Reinicializar con un animal
-    agregarAnimal();
+    //agregarAnimal();
     
     // Limpiar otros modelos (si tienen TextEditingController, límpialos aquí)
     // predioModel.limpiar(); // Comentado hasta que implementes el método

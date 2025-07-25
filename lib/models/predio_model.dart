@@ -6,6 +6,7 @@ class PredioModel {
   final TextEditingController localidadController = TextEditingController();
   final TextEditingController sitioController = TextEditingController();
   final TextEditingController parroquiaController = TextEditingController();
+  final TextEditingController ubicacionOrigenController = TextEditingController();
 
   String condicionTenencia = 'Propio'; // Propio, Arrendado, Prestado
   final List<String> condicionTenenciaOptions = [
@@ -14,58 +15,76 @@ class PredioModel {
     'Prestado',
   ];
 
-  // Campos del Destino (ahora con más campos)
+  // Campos del Destino
   final TextEditingController nombreDestinoController = TextEditingController();
-  final TextEditingController parroquiaDestinoController =
-      TextEditingController();
-  final TextEditingController direccionDestinoController =
-      TextEditingController();
+  final TextEditingController parroquiaDestinoController = TextEditingController();
+  final TextEditingController ubicacionDestinoController = TextEditingController();
 
-  // Para latitud y longitud puedes usar variables normales o TextEditingController si quieres entrada manual
+  // Coordenadas
   double? latitudDestino;
-  final TextEditingController kilometroController = TextEditingController();
   double? longitudDestino;
+  final TextEditingController kilometroController = TextEditingController();
 
-  bool esCentroFaenamiento = false;
+  bool _esCentroFaenamiento = false;
+  bool get esCentroFaenamiento => _esCentroFaenamiento;
+  
+  set esCentroFaenamiento(bool value) {
+    _esCentroFaenamiento = value;
+    if (value) {
+      // Establecer valores predeterminados cuando es centro de faenamiento
+      nombreDestinoController.text = 'Faenamiento Santa Cruz';
+      parroquiaDestinoController.text = 'Santa Cruz';
+      ubicacionDestinoController.text = 'Santa Cruz';
+    } else {
+      // Limpiar los campos si se desmarca
+      nombreDestinoController.clear();
+      parroquiaDestinoController.clear();
+      ubicacionDestinoController.clear();
+    }
+  }
 
   // Observaciones generales
-  final TextEditingController observacionesGeneralesController =
-      TextEditingController();
+  final TextEditingController observacionesGeneralesController = TextEditingController();
 
   String? get observacionesGenerales =>
       observacionesGeneralesController.text.isNotEmpty
           ? observacionesGeneralesController.text
           : null;
 
-  // Método para obtener datos del predio de origen
-   Map<String, dynamic> toJsonPredioOrigen() {
+  // Predio de Origen
+  Map<String, dynamic> toJsonPredioOrigen() {
     return {
       'nombre': nombreController.text,
       'localidad': localidadController.text,
       'sitio': sitioController.text,
       'parroquia': parroquiaController.text,
       'kilometro': double.tryParse(kilometroController.text) ?? 0.0,
-      'es_centro_faenamiento': false, // o según tu lógica
-      'latitud': null,
-      'longitud': null,
+      'es_centro_faenamiento': false,
+      'latitud': 0.0,
+      'longitud': 0.0,
+      'ubicacion': ubicacionOrigenController.text.isNotEmpty
+          ? ubicacionOrigenController.text
+          : "Ubicación no especificada",
       'tipo': 'origen',
       'condicion_tenencia': condicionTenencia,
     };
   }
 
+  // Predio de Destino
   Map<String, dynamic> toJsonDestino() {
     return {
       'nombre_predio': nombreDestinoController.text,
       'parroquia': parroquiaDestinoController.text,
-      'direccion': direccionDestinoController.text,
-      'es_centro_faenamiento': esCentroFaenamiento, // bool
-      'latitud': latitudDestino,
-      'longitud': longitudDestino,
+      'ubicacion': ubicacionDestinoController.text.isNotEmpty
+          ? ubicacionDestinoController.text
+          : "Ubicación no especificada",
+      'es_centro_faenamiento': esCentroFaenamiento,
+      'latitud': latitudDestino ?? 0.0,
+      'longitud': longitudDestino ?? 0.0,
       'tipo': 'destino',
     };
   }
 
-  // Método para obtener todos los datos en formato limpio y sin duplicados
   Map<String, dynamic> toJson() {
     return {
       'predio_origen': toJsonPredioOrigen(),
@@ -74,7 +93,7 @@ class PredioModel {
     };
   }
 
-  // Validaciones mejoradas para origen y destino
+  // Validaciones
   bool isOrigenValid() {
     final double? kilometro = double.tryParse(kilometroController.text);
     return nombreController.text.isNotEmpty &&
@@ -85,8 +104,7 @@ class PredioModel {
 
   bool isDestinoValid() {
     return nombreDestinoController.text.isNotEmpty &&
-        parroquiaDestinoController.text.isNotEmpty &&
-        direccionDestinoController.text.isNotEmpty;
+        parroquiaDestinoController.text.isNotEmpty;
   }
 
   bool isValid() {
@@ -99,9 +117,10 @@ class PredioModel {
     localidadController.dispose();
     sitioController.dispose();
     kilometroController.dispose();
+    ubicacionOrigenController.dispose();
     nombreDestinoController.dispose();
     parroquiaDestinoController.dispose();
-    direccionDestinoController.dispose();
+    ubicacionDestinoController.dispose();
     observacionesGeneralesController.dispose();
   }
 }

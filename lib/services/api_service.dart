@@ -1,8 +1,15 @@
 // api_service.dart
-import 'dart:async'; // Add this import
+import 'dart:async';
 import 'dart:convert';
+import 'dart:html' as html;
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart'; // Para kIsWeb
+import 'dart:io'; // Para Platform
+import 'package:open_file/open_file.dart';
+
 
 class ApiService {
   static const String _baseUrl = 'https://back-abg.onrender.com/api'; // URL base de tu API
@@ -71,7 +78,7 @@ static Future<List<dynamic>> obtenerMisMovilizaciones({
     if (fechaInicio != null) params['fecha_inicio'] = fechaInicio;
     if (fechaFin != null) params['fecha_fin'] = fechaFin;
 
-    final url = Uri.parse('$_baseUrl/movilizaciones/mis-movilizaciones').replace(
+    final url = Uri.parse('$_baseUrl/movilizaciones').replace(
       queryParameters: params.isNotEmpty ? params : null,
     );
 
@@ -90,8 +97,63 @@ static Future<List<dynamic>> obtenerMisMovilizaciones({
   }
 }
 
+static Future<void> descargarCertificadoPdf(int movilizacionId) async {
+  try {
+    final url = '$_baseUrl/movilizaciones/$movilizacionId/certificado';
+    final token = await _getToken();
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    ).timeout(const Duration(seconds: _timeoutSeconds));
+
+    if (response.statusCode == 200) {
+      if (kIsWeb) {
+        // Implementación para web
+        final bytes = response.bodyBytes;
+        final blob = html.Blob([bytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.document.createElement('a') as html.AnchorElement
+          ..href = url
+          ..style.display = 'none'
+          ..download = 'certificado_$movilizacionId.pdf';
+        html.document.body?.children.add(anchor);
+        anchor.click();
+        html.document.body?.children.remove(anchor);
+        html.Url.revokeObjectUrl(url);
+      } else {
+        // Implementación para móvil con verificación de null
+        final directory = await getDownloadsDirectory();
+        if (directory != null) {
+          final filePath = '${directory.path}/certificado_$movilizacionId.pdf';
+          final file = File(filePath);
+          await file.writeAsBytes(response.bodyBytes);
+          await OpenFile.open(filePath);
+        } else {
+          throw ApiException(message: 'No se pudo acceder al directorio de descargas');
+        }
+      }
+    } else {
+      throw ApiException(
+        statusCode: response.statusCode,
+        message: 'Error al descargar el certificado',
+      );
+    }
+  } on TimeoutException {
+    throw ApiException(message: 'Tiempo de espera agotado');
+  } catch (e) {
+    throw ApiException(message: 'Error al descargar PDF: $e');
+  }
+}}
+
+
+
+
   // Puedes agregar más métodos para otras operaciones aquí
-}
+
 
 // Clase para manejar excepciones de la API
 class ApiException implements Exception {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../request_screen_controller.dart';
 
 class TransporteSection extends StatelessWidget {
@@ -11,9 +12,9 @@ class TransporteSection extends StatelessWidget {
   static const Color secondaryText = Colors.black87;
   static const double spacing = 14.0;
 
-  InputDecoration _inputDecoration(String label) {
+  InputDecoration _inputDecoration(String label, {bool isRequired = true}) {
     return InputDecoration(
-      labelText: label,
+      labelText: label + (isRequired ? ' *' : ''),
       labelStyle: const TextStyle(color: secondaryText, fontWeight: FontWeight.w500),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -34,28 +35,16 @@ class TransporteSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<String>(
-          value: transporte.tipoVia,
-          decoration: _inputDecoration('Tipo de Vía *'),
-          items: transporte.tiposVia.map(
-            (tipo) => DropdownMenuItem(value: tipo, child: Text(tipo)),
-          ).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              transporte.tipoVia = value;
-              controller.notifyListeners();
-            }
-          },
-          validator: (value) => value == null ? 'Seleccione una opción' : null,
-        ),
-        const SizedBox(height: spacing),
-
+        // Tipo de Transporte
         DropdownButtonFormField<String>(
           value: transporte.tipoTransporte,
-          decoration: _inputDecoration('Tipo de Transporte *'),
-          items: transporte.tiposTransporte.map(
-            (tipo) => DropdownMenuItem(value: tipo, child: Text(tipo)),
-          ).toList(),
+          decoration: _inputDecoration('Tipo de Transporte'),
+          items: transporte.tiposTransporte.map((tipo) {
+            return DropdownMenuItem(
+              value: tipo,
+              child: Text(tipo == 'terrestre' ? 'Terrestre (Vehículo)' : 'Arreo (Caminando)'),
+            );
+          }).toList(),
           onChanged: (value) {
             if (value != null) {
               transporte.tipoTransporte = value;
@@ -64,55 +53,48 @@ class TransporteSection extends StatelessWidget {
           },
           validator: (value) => value == null ? 'Seleccione una opción' : null,
         ),
-        if (transporte.tipoTransporte == 'Otro') ...[
-          const SizedBox(height: spacing),
-          TextFormField(
-            controller: transporte.detalleOtro,
-            decoration: _inputDecoration('Especifique el tipo de transporte *'),
-            validator: (value) {
-              if (transporte.tipoTransporte == 'Otro' && (value == null || value.isEmpty)) {
-                return 'Este campo es requerido';
-              }
-              return null;
-            },
-          ),
-        ],
         const SizedBox(height: spacing),
 
+        // Campos del Transportista
         TextFormField(
-          controller: transporte.nombreTransportista,
-          decoration: _inputDecoration('Nombre del Transportista *'),
+          controller: transporte.nombreTransportistaController,
+          decoration: _inputDecoration('Nombre del Transportista'),
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),
         const SizedBox(height: spacing),
 
         TextFormField(
-          controller: transporte.cedulaTransportista,
-          decoration: _inputDecoration('Cédula del Transportista *'),
+          controller: transporte.cedulaTransportistaController,
+          decoration: _inputDecoration('Cédula del Transportista'),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Este campo es requerido';
-            }
-            if (value.length != 10) {
-              return 'La cédula debe tener 10 dígitos';
-            }
+            if (value == null || value.isEmpty) return 'Este campo es requerido';
+            if (value.length != 10) return 'La cédula debe tener 10 dígitos';
             return null;
           },
         ),
         const SizedBox(height: spacing),
 
-        TextFormField(
-          controller: transporte.placa,
-          decoration: _inputDecoration('Placa del Vehículo *'),
-          validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
-        ),
-        const SizedBox(height: spacing),
+        // Campo Placa/Matrícula (solo para transporte terrestre)
+        if (transporte.tipoTransporte == 'terrestre') ...[
+          TextFormField(
+            controller: transporte.placaMatriculaController,
+            decoration: _inputDecoration('Placa/Matrícula del Vehículo'),
+            validator: (value) {
+              if (transporte.tipoTransporte == 'terrestre' && 
+                  (value == null || value.isEmpty)) {
+                return 'Este campo es requerido para transporte terrestre';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: spacing),
+        ],
 
         TextFormField(
-          controller: transporte.telefonoTransportista,
-          decoration: _inputDecoration('Teléfono del Transportista *'),
+          controller: transporte.telefonoTransportistaController,
+          decoration: _inputDecoration('Teléfono del Transportista'),
           keyboardType: TextInputType.phone,
           validator: (value) => value?.isEmpty ?? true ? 'Este campo es requerido' : null,
         ),

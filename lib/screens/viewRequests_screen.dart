@@ -17,6 +17,8 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
   List<dynamic> movilizaciones = [];
   bool isLoading = true;
   String errorMessage = '';
+  bool isDownloading = false;
+  int? downloadingId;
 
   @override
   void initState() {
@@ -59,6 +61,8 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
         return Colors.orange;
       case 'rechazado':
         return Colors.red;
+      case 'finalizada':
+        return Colors.green[700]!;
       default:
         return Colors.grey;
     }
@@ -73,6 +77,58 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
     }
   }
 
+Future<void> _descargarCertificado(int movilizacionId) async {
+  if (isDownloading) return;
+  
+  setState(() {
+    isDownloading = true;
+    downloadingId = movilizacionId;
+  });
+
+  try {
+    await ApiService.descargarCertificadoPdf(movilizacionId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('PDF descargado correctamente')),
+    );
+  } on ApiException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.message),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Error al procesar la descarga'),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Detalles',
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error detallado'),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  } finally {
+    if (mounted) {
+      setState(() {
+        isDownloading = false;
+        downloadingId = null;
+      });
+    }
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,79 +163,82 @@ class _ViewRequestsScreenState extends State<ViewRequestsScreen> {
                           itemCount: movilizaciones.length,
                           itemBuilder: (context, index) {
                             final mov = movilizaciones[index];
+                            final isCurrentDownloading = 
+                                isDownloading && downloadingId == mov['id'];
+                            
                             return Card(
                               elevation: 4,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               margin: const EdgeInsets.only(bottom: 16),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onTap: () {
-                                  // Navegar a pantalla de detalle
-                                  // Navigator.push(context, MaterialPageRoute(
-                                  //   builder: (context) => RequestDetailScreen(movilizacionId: mov['id']),
-                                  // ));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Solicitud del ${_formatDate(mov['fecha_solicitud'])}',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryPurple,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (mov['predio_origen'] != null)
                                       Text(
-                                        'Solicitud del ${_formatDate(mov['fecha_solicitud'])}',
+                                        'Origen: ${mov['predio_origen']['nombre']}',
                                         style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: primaryPurple,
+                                          fontSize: 16,
+                                          color: secondaryText,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                      if (mov['predio_origen'] != null)
-                                        Text(
-                                          'Origen: ${mov['predio_origen']['nombre']}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: secondaryText,
-                                          ),
+                                    if (mov['predio_destino'] != null)
+                                      Text(
+                                        'Destino: ${mov['predio_destino']['nombre']}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: secondaryText,
                                         ),
-                                      if (mov['predio_destino'] != null)
-                                        Text(
-                                          'Destino: ${mov['predio_destino']['nombre']}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: secondaryText,
+                                      ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Chip(
+                                          label: Text(
+                                            mov['estado']?.toString().toUpperCase() ?? 'DESCONOCIDO',
+                                            style: const TextStyle(color: whiteColor),
                                           ),
+                                          backgroundColor: _getStatusColor(mov['estado']?.toString() ?? ''),
                                         ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Chip(
-                                            label: Text(
-                                              mov['estado']?.toString().toUpperCase() ?? 'DESCONOCIDO',
-                                              style: const TextStyle(color: whiteColor),
+                                        ElevatedButton(
+                                          onPressed: isCurrentDownloading 
+                                              ? null 
+                                              : () => _descargarCertificado(mov['id']),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: primaryPurple.withOpacity(0.1),
+                                            foregroundColor: primaryPurple,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
-                                            backgroundColor: _getStatusColor(mov['estado']?.toString() ?? ''),
+                                            padding: const EdgeInsets.symmetric(horizontal: 16),
                                           ),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              // Navegar a pantalla de detalle
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: primaryPurple.withOpacity(0.1),
-                                              foregroundColor: primaryPurple,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                                            ),
-                                            child: const Text('Ver Detalles'),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
+                                          child: isCurrentDownloading
+                                              ? const SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(primaryPurple),
+                                                  ),
+                                                )
+                                              : const Text('Descargar PDF'),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
                               ),
                             );
