@@ -16,9 +16,13 @@ class AuthService {
       final data = jsonDecode(response.body);
       
       if (response.statusCode == 200) {
-        // Guardar token
+        // Guardar token y nombre de usuario
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', data['data']['token']);
+        final responseData = data['data'];
+        await prefs.setString('token', responseData['token']);
+        if (responseData['usuario'] != null && responseData['usuario']['nombre'] != null) {
+          await prefs.setString('userNombre', responseData['usuario']['nombre']);
+        }
         return {'success': true, 'data': data};
       } else {
         return {'success': false, 'message': data['message']};
@@ -57,6 +61,12 @@ class AuthService {
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    await prefs.remove('userNombre');
+  }
+
+  static Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userNombre');
   }
 
   static Future<String?> getToken() async {

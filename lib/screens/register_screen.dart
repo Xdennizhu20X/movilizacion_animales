@@ -48,7 +48,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
-        title: Text('Registro'),
+        title: Text(
+          'Registro',
+          style: TextStyle(
+            color: Colors.white, // Aquí defines el color del texto
+            fontWeight: FontWeight.normal, // Opcional
+            fontSize: 20, // Opcional
+          ),
+        ),
         backgroundColor: primaryColor,
         centerTitle: true,
       ),
@@ -56,14 +63,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
             child: ListView(
               children: [
                 SizedBox(height: 20),
                 Image.asset(
-                  'assets/images/logo.png',
-                  width: 220,
-                  height: 100,
+                  'assets/images/nuevologo.png',
+                  width: 420,
+                  height: 200,
                   fit: BoxFit.contain,
                 ),
                 SizedBox(height: 24),
@@ -136,7 +143,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Por favor ingresa tu correo electrónico';
                     }
-                    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
+                    if (!RegExp(
+                      r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                    ).hasMatch(value)) {
                       return 'Ingresa un correo electrónico válido';
                     }
                     return null;
@@ -153,7 +162,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      _obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                       color: primaryColor.withOpacity(0.6),
                     ),
                     onPressed: () {
@@ -188,15 +199,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       elevation: 2,
                     ),
                     onPressed: _isLoading ? null : _handleRegister,
-                    child: _isLoading 
-                        ? CircularProgressIndicator(color: whiteColor)
-                        : Text(
-                            'Registrar',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                    child:
+                        _isLoading
+                            ? CircularProgressIndicator(color: whiteColor)
+                            : Text(
+                              'Registrar',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -265,7 +277,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorStyle: TextStyle(color: errorColor),
       ),
       validator: validator,
-      textInputAction: nextFocus != null ? TextInputAction.next : TextInputAction.done,
+      textInputAction:
+          nextFocus != null ? TextInputAction.next : TextInputAction.done,
       onFieldSubmitted: (_) {
         if (nextFocus != null) {
           FocusScope.of(context).requestFocus(nextFocus);
@@ -274,77 +287,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-Future<void> _handleRegister() async {
-  // 1. Forzar validación visual de todos los campos
-  _formKey.currentState?.save();
-  
-  // 2. Verificar si el formulario es válido
-  if (_formKey.currentState?.validate() ?? false) {
-    // Solo continuar si la validación es exitosa
-    setState(() => _isLoading = true);
-    
-    debugPrint('\n=== DATOS A ENVIAR ===');
-    debugPrint('Nombre: ${_nameController.text.trim()}');
-    debugPrint('Cédula: ${_cedulaController.text.trim()}');
-    debugPrint('Email: ${_emailController.text.trim()}');
-    debugPrint('Password: ${_passwordController.text.isNotEmpty ? "******" : "VACÍO"}');
+  Future<void> _handleRegister() async {
+    // 1. Forzar validación visual de todos los campos
+    _formKey.currentState?.save();
 
-    try {
-      final response = await http.post(
-        Uri.parse('https://back-abg.onrender.com/api/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'nombre': _nameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-          'ci': _cedulaController.text.trim(),
-        }),
-      ).timeout(Duration(seconds: 10));
+    // 2. Verificar si el formulario es válido
+    if (_formKey.currentState?.validate() ?? false) {
+      // Solo continuar si la validación es exitosa
+      setState(() => _isLoading = true);
 
-      final responseData = jsonDecode(response.body);
-      
-      if (response.statusCode == 201) {
-        _showSuccess('Registro exitoso!');
-        await Future.delayed(Duration(seconds: 1));
-        Navigator.pop(context);
-      } else {
-        _showError(responseData['message'] ?? 'Error en el registro');
+      debugPrint('\n=== DATOS A ENVIAR ===');
+      debugPrint('Nombre: ${_nameController.text.trim()}');
+      debugPrint('Cédula: ${_cedulaController.text.trim()}');
+      debugPrint('Email: ${_emailController.text.trim()}');
+      debugPrint(
+        'Password: ${_passwordController.text.isNotEmpty ? "******" : "VACÍO"}',
+      );
+
+      try {
+        final response = await http
+            .post(
+              Uri.parse('https://back-abg.onrender.com/api/auth/register'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'nombre': _nameController.text.trim(),
+                'email': _emailController.text.trim(),
+                'password': _passwordController.text,
+                'ci': _cedulaController.text.trim(),
+              }),
+            )
+            .timeout(Duration(seconds: 10));
+
+        final responseData = jsonDecode(response.body);
+
+        if (response.statusCode == 201) {
+          _showSuccess('Registro exitoso!');
+          await Future.delayed(Duration(seconds: 1));
+          Navigator.pop(context);
+        } else {
+          _showError(responseData['message'] ?? 'Error en el registro');
+        }
+      } catch (e) {
+        _showError('Error: ${e.toString()}');
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
       }
-    } catch (e) {
-      _showError('Error: ${e.toString()}');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+    } else {
+      // Mostrar error específico si la validación falla
+      _showFieldErrors();
     }
-  } else {
-    // Mostrar error específico si la validación falla
-    _showFieldErrors();
   }
-}
 
-void _showFieldErrors() {
-  if (_nameController.text.trim().isEmpty) {
-    _showError('Nombre completo es requerido');
-    FocusScope.of(context).requestFocus(_nameFocus);
-  } else if (_cedulaController.text.trim().isEmpty) {
-    _showError('Cédula es requerida');
-    FocusScope.of(context).requestFocus(_cedulaFocus);
-  } else if (!RegExp(r'^[0-9]{10}$').hasMatch(_cedulaController.text.trim())) {
-    _showError('Cédula debe tener 10 dígitos');
-    FocusScope.of(context).requestFocus(_cedulaFocus);
-  } else if (_emailController.text.trim().isEmpty) {
-    _showError('Email es requerido');
-    FocusScope.of(context).requestFocus(_emailFocus);
-  } else if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_emailController.text.trim())) {
-    _showError('Ingrese un email válido');
-    FocusScope.of(context).requestFocus(_emailFocus);
-  } else if (_passwordController.text.isEmpty) {
-    _showError('Contraseña es requerida');
-    FocusScope.of(context).requestFocus(_passwordFocus);
-  } else if (_passwordController.text.length < 6) {
-    _showError('Contraseña debe tener 6+ caracteres');
-    FocusScope.of(context).requestFocus(_passwordFocus);
+  void _showFieldErrors() {
+    if (_nameController.text.trim().isEmpty) {
+      _showError('Nombre completo es requerido');
+      FocusScope.of(context).requestFocus(_nameFocus);
+    } else if (_cedulaController.text.trim().isEmpty) {
+      _showError('Cédula es requerida');
+      FocusScope.of(context).requestFocus(_cedulaFocus);
+    } else if (!RegExp(
+      r'^[0-9]{10}$',
+    ).hasMatch(_cedulaController.text.trim())) {
+      _showError('Cédula debe tener 10 dígitos');
+      FocusScope.of(context).requestFocus(_cedulaFocus);
+    } else if (_emailController.text.trim().isEmpty) {
+      _showError('Email es requerido');
+      FocusScope.of(context).requestFocus(_emailFocus);
+    } else if (!RegExp(
+      r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+    ).hasMatch(_emailController.text.trim())) {
+      _showError('Ingrese un email válido');
+      FocusScope.of(context).requestFocus(_emailFocus);
+    } else if (_passwordController.text.isEmpty) {
+      _showError('Contraseña es requerida');
+      FocusScope.of(context).requestFocus(_passwordFocus);
+    } else if (_passwordController.text.length < 6) {
+      _showError('Contraseña debe tener 6+ caracteres');
+      FocusScope.of(context).requestFocus(_passwordFocus);
+    }
   }
-}
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -352,9 +373,7 @@ void _showFieldErrors() {
         content: Text(message),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: Duration(seconds: 3),
       ),
     );
@@ -366,9 +385,7 @@ void _showFieldErrors() {
         content: Text(message),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: Duration(seconds: 3),
       ),
     );

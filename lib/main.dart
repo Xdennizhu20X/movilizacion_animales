@@ -6,6 +6,7 @@ import 'screens/request_screen/request_screen.dart';
 import 'screens/viewRequests_screen.dart';
 import 'screens/forgotPasswordScreen.dart';
 import 'package:movilizacion_animales/screens/webview_screen.dart';
+import 'screens/profile_screen.dart'; // Importar la nueva pantalla
 
 void main() {
   runApp(MovilizacionApp());
@@ -30,6 +31,7 @@ class MovilizacionApp extends StatelessWidget {
         '/request': (context) => RequestScreen(), 
         '/viewRequests': (context) => ViewRequestsScreen(),
         '/forgot-password': (context) => ForgotPasswordScreen(),
+        '/profile': (context) => ProfileScreen(), // Agregar la nueva ruta
       },
     );
   }

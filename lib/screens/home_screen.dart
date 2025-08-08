@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/services/auth_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final Color primaryPurple = Color(0xFF6e328a);
   final Color whiteColor = Colors.white;
   final Color secondaryText = Color(0xFF4A4A4A);
+  String? userNombre;
 
-  HomeScreen({super.key}); // Gris oscuro para textos suaves
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    String? name = await AuthService.getUserName();
+    setState(() {
+      userNombre = name;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +46,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bienvenido',
+              'Bienvenido${userNombre != null ? ', $userNombre' : ''}',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -65,9 +85,7 @@ class HomeScreen extends StatelessWidget {
               context,
               icon: Icons.settings,
               title: 'Ajustes de Cuenta',
-              onTap: () {
-                // Navegar a ajustes
-              },
+              onTap: () => Navigator.pushNamed(context, '/profile'),
             ),
           ],
         ),

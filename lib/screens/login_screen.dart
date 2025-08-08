@@ -17,19 +17,19 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: whiteColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 40),
+                SizedBox(height: 10),
                 Image.asset(
-                  'assets/images/logo.png',
-                  width: 220,
-                  height: 100,
+                  'assets/images/nuevologo.png',
+                  width: 520,
+                  height: 200,
                   fit: BoxFit.contain,
                 ),
 
-                SizedBox(height: 24),
+                SizedBox(height: 10),
 
                 Text(
                   'Bienvenido',
@@ -139,7 +139,7 @@ class LoginScreen extends StatelessWidget {
     required IconData icon,
     required Color primaryColor,
     required Color borderColor,
-    
+
     bool obscureText = false,
   }) {
     return TextField(
