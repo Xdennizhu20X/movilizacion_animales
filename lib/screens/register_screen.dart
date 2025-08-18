@@ -13,12 +13,14 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _cedulaController = TextEditingController();
+  final _telefonoController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _cedulaFocus = FocusNode();
+  final FocusNode _telefonoFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
@@ -34,10 +36,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _cedulaController.dispose();
+    _telefonoController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _nameFocus.dispose();
     _cedulaFocus.dispose();
+    _telefonoFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
     super.dispose();
@@ -114,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _buildTextField(
                   controller: _cedulaController,
                   focusNode: _cedulaFocus,
-                  nextFocus: _emailFocus,
+                  nextFocus: _telefonoFocus,
                   label: 'Cédula',
                   icon: Icons.credit_card_outlined,
                   keyboardType: TextInputType.number,
@@ -125,6 +129,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     final cleaned = value.replaceAll(RegExp(r'[^0-9]'), '');
                     if (cleaned.length != 10) {
                       return 'Cédula debe tener 10 dígitos';
+                    }
+                    return null;
+                  },
+                ),
+
+                SizedBox(height: 20),
+
+                _buildTextField(
+                  controller: _telefonoController,
+                  focusNode: _telefonoFocus,
+                  nextFocus: _emailFocus,
+                  label: 'Teléfono',
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Por favor ingresa tu número de teléfono';
+                    }
+                    if (value.length < 10) {
+                      return 'El teléfono debe tener al menos 10 dígitos';
                     }
                     return null;
                   },
@@ -144,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return 'Por favor ingresa tu correo electrónico';
                     }
                     if (!RegExp(
-                      r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                     ).hasMatch(value)) {
                       return 'Ingresa un correo electrónico válido';
                     }
@@ -299,6 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       debugPrint('\n=== DATOS A ENVIAR ===');
       debugPrint('Nombre: ${_nameController.text.trim()}');
       debugPrint('Cédula: ${_cedulaController.text.trim()}');
+      debugPrint('Teléfono: ${_telefonoController.text.trim()}');
       debugPrint('Email: ${_emailController.text.trim()}');
       debugPrint(
         'Password: ${_passwordController.text.isNotEmpty ? "******" : "VACÍO"}',
@@ -314,6 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'email': _emailController.text.trim(),
                 'password': _passwordController.text,
                 'ci': _cedulaController.text.trim(),
+                'telefono': _telefonoController.text.trim(),
               }),
             )
             .timeout(Duration(seconds: 10));
@@ -350,11 +376,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ).hasMatch(_cedulaController.text.trim())) {
       _showError('Cédula debe tener 10 dígitos');
       FocusScope.of(context).requestFocus(_cedulaFocus);
+    } else if (_telefonoController.text.trim().isEmpty) {
+      _showError('Teléfono es requerido');
+      FocusScope.of(context).requestFocus(_telefonoFocus);
+    } else if (_telefonoController.text.length < 10) {
+      _showError('El teléfono debe tener al menos 10 dígitos');
+      FocusScope.of(context).requestFocus(_telefonoFocus);
     } else if (_emailController.text.trim().isEmpty) {
       _showError('Email es requerido');
       FocusScope.of(context).requestFocus(_emailFocus);
     } else if (!RegExp(
-      r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     ).hasMatch(_emailController.text.trim())) {
       _showError('Ingrese un email válido');
       FocusScope.of(context).requestFocus(_emailFocus);
