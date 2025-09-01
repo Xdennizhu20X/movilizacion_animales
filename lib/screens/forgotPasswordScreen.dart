@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/screens/app_widgets.dart';
 import '../services/auth_service.dart'; // Asegúrate que tenga el método para solicitar el reset
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -65,6 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const LogoHeader(),
             Text(
               'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
               style: TextStyle(fontSize: 18, color: blueColor),

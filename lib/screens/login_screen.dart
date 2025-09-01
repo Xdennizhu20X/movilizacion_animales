@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/screens/app_widgets.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -21,15 +22,7 @@ class LoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 10),
-                Image.asset(
-                  'assets/images/nuevologo.png',
-                  width: 520,
-                  height: 200,
-                  fit: BoxFit.contain,
-                ),
-
-                SizedBox(height: 10),
+                const LogoHeader(),
 
                 Text(
                   'Bienvenido',

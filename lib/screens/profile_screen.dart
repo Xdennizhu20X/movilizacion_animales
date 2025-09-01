@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movilizacion_animales/services/user_service.dart';
+import 'app_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -37,11 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final Color whiteColor = Colors.white;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Perfil de Usuario', style: TextStyle(color: whiteColor)),
-        backgroundColor: primaryPurple,
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: 'Perfil de Usuario'),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : userData == null
@@ -51,6 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const LogoHeader(),
                       _buildProfileHeader(),
                       SizedBox(height: 30),
                       _buildProfileDetailCard(),

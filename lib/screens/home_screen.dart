@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movilizacion_animales/services/auth_service.dart';
+import 'login_screen.dart';
+import 'app_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -31,20 +33,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        title: Text(
-          'Menú Principal',
-          style: TextStyle(color: whiteColor),
-        ),
-        centerTitle: true,
-        backgroundColor: primaryPurple,
-        elevation: 4,
+      appBar: CustomAppBar(
+        title: 'Menú Principal',
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: whiteColor),
+            onPressed: () async {
+              await AuthService.logout();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const LogoHeader(),
             Text(
               'Bienvenido${userNombre != null ? ', $userNombre' : ''}',
               style: TextStyle(

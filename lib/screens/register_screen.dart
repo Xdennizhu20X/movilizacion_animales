@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'app_widgets.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -51,18 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        title: Text(
-          'Registro',
-          style: TextStyle(
-            color: Colors.white, // Aquí defines el color del texto
-            fontWeight: FontWeight.normal, // Opcional
-            fontSize: 20, // Opcional
-          ),
-        ),
-        backgroundColor: primaryColor,
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: 'Registro'),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -70,14 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
             child: ListView(
               children: [
-                SizedBox(height: 20),
-                Image.asset(
-                  'assets/images/nuevologo.png',
-                  width: 420,
-                  height: 200,
-                  fit: BoxFit.contain,
-                ),
-                SizedBox(height: 24),
+                const LogoHeader(),
 
                 Text(
                   'Crea tu cuenta',

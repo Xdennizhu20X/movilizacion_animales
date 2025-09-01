@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/screens/app_widgets.dart';
 import 'request_screen_controller.dart';
 import 'sections/predio_section.dart';
 import 'sections/transporte_section.dart';
@@ -25,6 +26,7 @@ class RequestScreenView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const LogoHeader(),
               // Predio Section
               _buildSectionCard(
                 child: PredioSection(controller: controller),

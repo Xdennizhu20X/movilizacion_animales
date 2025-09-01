@@ -1,14 +1,16 @@
 // api_service.dart
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart'; // Para kIsWeb
-import 'dart:io'; // Para Platform
 import 'package:open_file/open_file.dart';
+import 'dart:html' as html;
+
 
 class ApiService {
   static const String _baseUrl =
@@ -45,6 +47,11 @@ class ApiService {
     }
   }
 
+  static Future<bool> _isOnline() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    return connectivityResult != ConnectivityResult.none;
+  }
+
   // Método para enviar la solicitud
   static Future<Map<String, dynamic>> enviarSolicitud(
     Map<String, dynamic> datos,
@@ -65,6 +72,8 @@ class ApiService {
       throw ApiException(message: 'Error inesperado: $e');
     }
   }
+
+  
 
   // Método para obtener solicitudes (ejemplo adicional)
   static Future<List<dynamic>> obtenerMisMovilizaciones({
@@ -87,7 +96,11 @@ class ApiService {
           .get(url, headers: await _getHeaders())
           .timeout(const Duration(seconds: _timeoutSeconds));
 
-      return _handleResponse(response);
+      final responseData = _handleResponse(response);
+      if (responseData is Map<String, dynamic> && responseData.containsKey('data') && responseData['data'] is List) {
+        return responseData['data'];
+      }
+      return responseData;
     } on http.ClientException catch (e) {
       throw ApiException(message: 'Error de conexión: ${e.message}');
     } on TimeoutException {

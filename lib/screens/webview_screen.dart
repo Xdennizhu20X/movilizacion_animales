@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/screens/app_widgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
@@ -68,11 +69,18 @@ Page resource error:
       appBar: AppBar(
         title: Text(widget.title ?? 'Navegador'),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          WebViewWidget(controller: _controller),
-          if (_loadingPercentage < 100)
-            LinearProgressIndicator(value: _loadingPercentage / 100.0),
+          const LogoHeader(),
+          Expanded(
+            child: Stack(
+              children: [
+                WebViewWidget(controller: _controller),
+                if (_loadingPercentage < 100)
+                  LinearProgressIndicator(value: _loadingPercentage / 100.0),
+              ],
+            ),
+          ),
         ],
       ),
     );

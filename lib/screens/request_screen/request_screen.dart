@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movilizacion_animales/screens/app_widgets.dart';
 import 'request_screen_controller.dart';
 import 'request_screen_view.dart';
 
@@ -13,16 +14,7 @@ class RequestScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        title: const Text(
-          'Nueva Solicitud de Movilización',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: primaryPurple,
-        elevation: 4,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      appBar: const CustomAppBar(title: 'Nueva Solicitud de Movilización'),
       body: RequestScreenView(
         controller: RequestScreenController(),
       ),
