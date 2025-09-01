@@ -50,53 +50,55 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const LogoHeader(),
-            Text(
-              'Bienvenido${userNombre != null ? ', $userNombre' : ''}',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: primaryPurple,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const LogoHeader(),
+              Text(
+                'Bienvenido${userNombre != null ? ', $userNombre' : ''}',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: primaryPurple,
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              '¿Qué deseas hacer hoy?',
-              style: TextStyle(
-                fontSize: 18,
-                color: secondaryText,
+              SizedBox(height: 10),
+              Text(
+                '¿Qué deseas hacer hoy?',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: secondaryText,
+                ),
               ),
-            ),
-            SizedBox(height: 30),
+              SizedBox(height: 30),
 
-            _buildMenuCard(
-              context,
-              icon: Icons.assignment_outlined,
-              title: 'Solicitar Movilización',
-              onTap: () => Navigator.pushNamed(context, '/request'),
-            ),
+              _buildMenuCard(
+                context,
+                icon: Icons.assignment_outlined,
+                title: 'Solicitar Movilización',
+                onTap: () => Navigator.pushNamed(context, '/request'),
+              ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            _buildMenuCard(
-              context,
-              icon: Icons.history,
-              title: 'Ver Solicitudes',
-              onTap: () => Navigator.pushNamed(context, '/viewRequests'),
-            ),
+              _buildMenuCard(
+                context,
+                icon: Icons.history,
+                title: 'Ver Solicitudes',
+                onTap: () => Navigator.pushNamed(context, '/viewRequests'),
+              ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            _buildMenuCard(
-              context,
-              icon: Icons.settings,
-              title: 'Ajustes de Cuenta',
-              onTap: () => Navigator.pushNamed(context, '/profile'),
-            ),
-          ],
+              _buildMenuCard(
+                context,
+                icon: Icons.settings,
+                title: 'Ajustes de Cuenta',
+                onTap: () => Navigator.pushNamed(context, '/profile'),
+              ),
+            ],
+          ),
         ),
       ),
     );
