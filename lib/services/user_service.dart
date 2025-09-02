@@ -3,13 +3,16 @@ import 'dart:convert';
 import 'package:movilizacion_animales/services/auth_service.dart';
 
 class UserService {
-  static const String _baseUrl = 'https://back-abg.onrender.com/api/usuarios';
+  static const String _baseUrl = 'http://51.178.31.63:3000/api/usuarios';
 
   static Future<Map<String, dynamic>> getProfile() async {
     try {
       final token = await AuthService.getToken();
       if (token == null) {
-        return {'success': false, 'message': 'No se encontró token de autenticación.'};
+        return {
+          'success': false,
+          'message': 'No se encontró token de autenticación.',
+        };
       }
 
       final response = await http.get(
@@ -28,7 +31,10 @@ class UserService {
         return {'success': false, 'message': data['message']};
       }
     } catch (e) {
-      return {'success': false, 'message': 'Error de conexión: \${e.toString()}'};
+      return {
+        'success': false,
+        'message': 'Error de conexión: \${e.toString()}',
+      };
     }
   }
 }
