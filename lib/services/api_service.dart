@@ -13,7 +13,7 @@ import 'dart:html' as html;
 
 class ApiService {
   static const String _baseUrl =
-      'https://51.178.31.63:3000/api'; // URL base de tu API
+      'http://51.178.31.63:3000/api'; // URL base de tu API
   static const int _timeoutSeconds = 30; // Timeout para las solicitudes
 
   // Método privado para obtener headers con autenticación

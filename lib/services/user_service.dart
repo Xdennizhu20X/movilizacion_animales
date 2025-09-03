@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:movilizacion_animales/services/auth_service.dart';
 
 class UserService {
-  static const String _baseUrl = 'https://51.178.31.63:3000/api/usuarios';
+  static const String _baseUrl = 'http://51.178.31.63:3000/api/usuarios';
 
   static Future<Map<String, dynamic>> getProfile() async {
     try {
