@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String _baseUrl = 'http://51.178.31.63:3000/api/auth';
+  static const String _baseUrl = 'https://51.178.31.63:3000/api/auth';
 
   static Future<Map<String, dynamic>> login(
     String email,
