@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -17,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _telefonoController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   final FocusNode _nameFocus = FocusNode();
@@ -24,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final FocusNode _telefonoFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
+  final FocusNode _confirmPasswordFocus = FocusNode();
 
   final Color primaryColor = Color(0xFF6E328A);
   final Color whiteColor = Colors.white;
@@ -32,6 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -40,11 +44,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _telefonoController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _nameFocus.dispose();
     _cedulaFocus.dispose();
     _telefonoFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -104,14 +110,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   nextFocus: _telefonoFocus,
                   label: 'Cédula',
                   icon: Icons.credit_card_outlined,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Por favor ingresa tu número de cédula';
                     }
-                    final cleaned = value.replaceAll(RegExp(r'[^0-9]'), '');
-                    if (cleaned.length != 10) {
-                      return 'Cédula debe tener 10 dígitos';
+                    if (value.length != 10) {
+                      return 'La cédula debe tener exactamente 10 dígitos';
                     }
                     return null;
                   },
@@ -164,6 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _buildTextField(
                   controller: _passwordController,
                   focusNode: _passwordFocus,
+                  nextFocus: _confirmPasswordFocus,
                   label: 'Contraseña',
                   icon: Icons.lock_outlined,
                   obscureText: _obscurePassword,
@@ -186,6 +196,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     if (value.length < 6) {
                       return 'La contraseña debe tener al menos 6 caracteres';
+                    }
+                    return null;
+                  },
+                ),
+
+                SizedBox(height: 20),
+
+                _buildTextField(
+                  controller: _confirmPasswordController,
+                  focusNode: _confirmPasswordFocus,
+                  label: 'Confirmar Contraseña',
+                  icon: Icons.lock_outlined,
+                  obscureText: _obscureConfirmPassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: primaryColor.withOpacity(0.6),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor confirma tu contraseña';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Las contraseñas no coinciden';
                     }
                     return null;
                   },
@@ -250,12 +292,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      inputFormatters: inputFormatters,
       style: TextStyle(fontSize: 18, color: primaryColor),
       decoration: InputDecoration(
         labelText: label,

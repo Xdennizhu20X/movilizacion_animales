@@ -66,11 +66,14 @@ class TransporteSection extends StatelessWidget {
         TextFormField(
           controller: transporte.cedulaTransportistaController,
           decoration: _inputDecoration('Cédula del Transportista'),
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.text,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
           validator: (value) {
             if (value == null || value.isEmpty) return 'Este campo es requerido';
-            if (value.length != 10) return 'La cédula debe tener 10 dígitos';
+            if (value.length != 10) return 'La cédula debe tener exactamente 10 dígitos';
             return null;
           },
         ),
